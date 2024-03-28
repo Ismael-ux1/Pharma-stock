@@ -1,0 +1,42 @@
+{% extends 'stock/base.html' %}
+
+{% block title %}Order Management{% endblock title %}
+
+{% block content %}
+<div class="container">
+    <h2 class="my-4">{{ title }}</h2>
+    <form method="POST">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    <hr>
+    <h3>Existing Orders</h3>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Created By</th>
+          <th>Quantity</th>
+          <th>Price</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in orders %}
+          <tr>
+            <td>{{ order.product }}</td>
+            <td>{{ order.created_by }}</td>
+            <td>{{ order.quantity }}</td>
+            <td>{{ order.price }}</td>
+            <td>{{ order.get_status_display }}</td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="5" class="text-center">No orders found</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock content %}
