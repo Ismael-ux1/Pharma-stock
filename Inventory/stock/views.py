@@ -9,8 +9,6 @@ from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 import pandas as pd
-import plotly.express as px
-from plotly.offline import plot
 import json
 
 

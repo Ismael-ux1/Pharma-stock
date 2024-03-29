@@ -44,7 +44,7 @@ python manage.py runserver
 - Sales Tracking: Information on how to track sales.
 
 ## Contributing
-`We welcome contributions from the community. Please read our contributing guide for more information.`
+`I welcome contributions from the community.`
 
 ## Contact Information
 `For any queries or feedback, please reach out to me at [ismaelabdulahi1@gmail.com].`
