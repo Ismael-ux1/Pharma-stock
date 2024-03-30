@@ -12,14 +12,20 @@ import pandas as pd
 import json
 
 
-@login_required
+@login_required  # Decorator to ensure the user is authenticated
 def index(request):
-    users = User.objects.all()
-    orders = Order.objects.all()
-    products = Product.objects.all()
-    sales = Sale.objects.all()
-    reg_users = len(User.objects.all())
+    """ view function for the index page """
 
+    # get all the users
+    users = User.objects.all()
+    # get all orders
+    orders = Order.objects.all()
+    # get all products
+    products = Product.objects.all()
+    # get all sales
+    sales = Sale.objects.all()
+    # get the  count of all users
+    reg_users = len(User.objects.all())
 
     # Check each order
     for order in orders:
@@ -36,21 +42,33 @@ def index(request):
     # Update the sales list after potentially creating new Sales
     sales = Sale.objects.all()
 
+    # get the count of all orders
     order_count = orders.count()
+    # get the count of all products
     product_count = len(products)
+    # get the count of all sales
     sale_count = sales.count()
 
+    # if the request methos is POST
     if request.method == 'POST':
+        # Instantiate the OrderForm with the POST data
         form = OrderForm(request.POST)
+        # if the form is valid
         if form.is_valid():
+            # save the form but dont commit to the database yet
             obj = form.save(commit=False)
+            # set the customer to the current user
             obj.customer = request.user
+            # save the form to the database
             obj.save()
+            # redirect the dashboard index
             return redirect('dashboard-index')
+    # if the request method is not POST
     else:
+        # Instatiate an empty OrderForm
         form = OrderForm()
 
-    context = {
+    context = {  # context dictionary to pass to the template
         'tittle': "Home",
         'users': users,
         'form': form,
@@ -62,6 +80,7 @@ def index(request):
         'sale_count': sale_count,
         "count_users": reg_users,
     }
+    # Render the index page with the context
     return render(request, 'stock/index.html', context)
 
 
@@ -95,14 +114,14 @@ def orders(request):
     context = {"title": "Orders", "orders": orders, "form": form}
     return render(request, "stock/orders.html", context)
 
+
 @login_required
 def sales_view(request):
     sales = Sale.objects.all()  # Get all sales
-    context = {
-    'sales': sales,
-}
+    context = {'sales': sales, }
     return render(request, 'stock/sales_report.html', context)
-    
+
+
 @login_required
 def users(request):
     users = User.objects.all()
