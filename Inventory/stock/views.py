@@ -86,15 +86,28 @@ def index(request):
 
 @login_required
 def products(request):
+    """ view function for handling products """
+
+    # query all products from the database
     products = Product.objects.all()
+    # chech if the form is valid
     if request.method == "POST":
+        # create a from instance and populate it with data from the request
         form = ProductForm(request.POST)
+
+        # check if the form is valid
         if form.is_valid():
+            # save the form data to the database
             form.save()
+            # Redirect to the product page
             return redirect("products")
+    # create a new form instance
     else:
         form = ProductForm()
+
+    # Context data to be passed to the template
     context = {"title": "Products", "products": products, "form": form}
+    # Render the template with the context data
     return render(request, "stock/products.html", context)
 
 
