@@ -4,7 +4,6 @@ from django.utils import timezone
 from django.db.models import Sum
 import uuid
 
-
 class Category(models.Model):
     """ Category model definition """
     name = models.CharField(max_length=100)  # name field
@@ -27,8 +26,7 @@ class Product(models.Model):
     # product quantity field
     quantity = models.PositiveIntegerField(null=True)
 
-    serial_number = models.CharField(max_length=100,
-                                     unique=True, default=uuid.uuid4)
+    serial_number = models.CharField(max_length=100, unique=True, default=uuid.uuid4)
     # time stamp for when the product was created
     created_at = models.DateTimeField(auto_now_add=True)
     # time stamp for the last update of the product
