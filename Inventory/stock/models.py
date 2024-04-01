@@ -88,35 +88,27 @@ class Order(models.Model):
 
     def save(self, *args, **kwargs):
         """ the save method for the Order model. """
-
-        # Check if the quantity ordered is more than the,
-        # quantity available in the product
-        if self.quantity > self.product.quantity:
-            raise ValidationError("The quantity ordered cannot be more than the quantity available in the product.")
-
-        # Check if the price matches the actual product price
-        if self.price != self.product.price:
-            raise ValidationError("The price does not match the actual product price.")
-
-        # if order exists
+        # Check if the order instance already exists in the database
         if self.pk is not None:
-            # get the original order from the database
+            # Get the original order from the database
             orig = Order.objects.get(pk=self.pk)
-            # check if the status of the orginal order is not 'delivered'
+
+            # Check if the status of the original order is not 'delivered',
             # and the current status is 'delivered'
             if orig.status != 'delivered' and self.status == 'delivered':
-                # # Create a new sale record with the product,
-                # buyer, quantity, and price of the order
+                # Create a new sale record with the product, buyer,
+                # quantity, and price of the order
                 Sale.objects.create(product=self.product,
                                     buyer=self.created_by,
                                     quantity=self.quantity, price=self.price)
-                # Decrease the quantity of the product by the,
-                # quantity of the order
+                # Decrease the quantity of the product,
+                # by the quantity of the order
                 self.product.quantity -= self.quantity
                 # Save the changes to the product
                 self.product.save()
-        # Call the parent class's save method to save the changes to the order
-        super().save(*args, **kwargs)
+            # Call the parent class's save method
+            # to save the changes to the order
+            super().save(*args, **kwargs)
 
 
 class Sale(models.Model):

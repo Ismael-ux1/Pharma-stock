@@ -27,18 +27,6 @@ def index(request):
     # get the  count of all users
     reg_users = len(User.objects.all())
 
-    # Check each order
-    for order in orders:
-        # If the order is delivered and a corresponding Sale does not exist
-        if order.status == 'Delivered' and not Sale.objects.filter(order=order).exists():
-            # Create a new Sale
-            Sale.objects.create(
-                product=order.product,
-                buyer=order.buyer,
-                quantity=order.quantity,
-                price=order.price
-            )
-
     # Update the sales list after potentially creating new Sales
     sales = Sale.objects.all()
 
@@ -114,14 +102,21 @@ def products(request):
 @login_required(login_url='login')
 def orders(request):
     orders = Order.objects.all()
-    print([i for i in request])
     if request.method == "POST":
         form = OrderForm(request.POST)
         if form.is_valid():
             instance = form.save(commit=False)
-            instance.created_by = request.user
-            instance.save()
-            return redirect("orders")
+            # Check if the quantity ordered is more than the quantity available in the product
+            if instance.quantity > instance.product.quantity:
+                messages.error(request, 'The quantity ordered cannot be more than the quantity available in the product.')
+            # Check if the price matches the actual product price
+            elif instance.price != instance.product.price:
+                messages.error(request, 'The price does not match the actual product price.')
+            else:
+                instance.created_by = request.user
+                instance.save()
+                messages.success(request, 'Order created successfully.')
+                return redirect("orders")
     else:
         form = OrderForm()
     context = {"title": "Orders", "orders": orders, "form": form}
