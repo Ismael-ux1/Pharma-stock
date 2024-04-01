@@ -7,7 +7,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 class ProductAdmin(admin.ModelAdmin):
     model = Product
-    list_display = ("name", "category", "description", "price", "quantity", "created_at", "updated_at")
+    list_display = ("name", "serial_number", "description", "price", "quantity", "created_at", "updated_at")
     list_filter = ["category"]
     search_fields = ["name"]
 
