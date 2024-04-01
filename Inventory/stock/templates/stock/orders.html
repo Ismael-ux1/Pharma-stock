@@ -4,6 +4,13 @@
 
 {% block content %}
 <div class="container">
+	{% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
     <h2 class="my-4">{{ title }}</h2>
     <form method="POST">
       {% csrf_token %}
