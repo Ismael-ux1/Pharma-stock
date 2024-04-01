@@ -37,7 +37,7 @@ class OrderForm(forms.ModelForm):
         # Specifies the model to be used for the form
         model = Order
         fields = [  # Defines the fields to be included in the form
-            'product', 'created_by', 'quantity', 'price', 'status'
+            'product', 'created_by', 'quantity', 'price'
         ]
         widgets = {
             # Customizes the widget for 'product' field
