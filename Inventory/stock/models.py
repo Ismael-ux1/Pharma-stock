@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.db.models import Sum
+from django.core.exceptions import ValidationError
+import uuid
 
 
 class Category(models.Model):
@@ -16,7 +18,7 @@ class Category(models.Model):
 
 class Product(models.Model):
     """ product model definition """
-    name = models.CharField(max_length=100)  # product name field
+    name = models.CharField(max_length=100, unique=True)  # product name field
     # Foreign key to category model
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     # product description field
@@ -25,6 +27,9 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     # product quantity field
     quantity = models.PositiveIntegerField(null=True)
+
+    serial_number = models.CharField(max_length=100,
+                                     unique=True, default=uuid.uuid4)
     # time stamp for when the product was created
     created_at = models.DateTimeField(auto_now_add=True)
     # time stamp for the last update of the product
@@ -54,6 +59,11 @@ class UserProfile(models.Model):
 
 class Order(models.Model):
     """ order model definition """
+    STATUS_CHOICES = [
+        ('Pending', 'Pending'),
+        ('Delivered', 'Delivered'),
+        ('Cancelled', 'Cancelled'),
+    ]
     # Foreign key to the Product model
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     # Foreign key to the User model
@@ -63,10 +73,8 @@ class Order(models.Model):
     # price of the product ordered
     price = models.DecimalField(max_digits=10, decimal_places=2)
     # status of the order
-    status = models.CharField(max_length=10, choices=[
-                              ('pending', 'Pending'),
-                              ('delivered', 'Delivered'),
-                              ('cancelled', 'Cancelled')])
+    status = models.CharField(max_length=10,
+                              choices=STATUS_CHOICES, default='Pending')
 
     # time stamp when the order was created
     created_at = models.DateTimeField(auto_now_add=True)
@@ -81,19 +89,33 @@ class Order(models.Model):
     def save(self, *args, **kwargs):
         """ the save method for the Order model. """
 
+        # Check if the quantity ordered is more than the,
+        # quantity available in the product
+        if self.quantity > self.product.quantity:
+            raise ValidationError("The quantity ordered cannot be more than the quantity available in the product.")
+
+        # Check if the price matches the actual product price
+        if self.price != self.product.price:
+            raise ValidationError("The price does not match the actual product price.")
+
         # if order exists
         if self.pk is not None:
-            # Retrieve the original Order object from the database using
-            # the primary key of the current instance
+            # get the original order from the database
             orig = Order.objects.get(pk=self.pk)
-            # if status changed to 'delivered'
+            # check if the status of the orginal order is not 'delivered'
+            # and the current status is 'delivered'
             if orig.status != 'delivered' and self.status == 'delivered':
-                # create a sale
+                # # Create a new sale record with the product,
+                # buyer, quantity, and price of the order
                 Sale.objects.create(product=self.product,
                                     buyer=self.created_by,
                                     quantity=self.quantity, price=self.price)
-        # calls the save method of the superclass (models.Model)
-        # It saves the current instance to the database.
+                # Decrease the quantity of the product by the,
+                # quantity of the order
+                self.product.quantity -= self.quantity
+                # Save the changes to the product
+                self.product.save()
+        # Call the parent class's save method to save the changes to the order
         super().save(*args, **kwargs)
 
 
