@@ -3,7 +3,8 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.db.models import Sum
 import uuid
-from django.core.exceptions import ValidationError 
+from django.core.exceptions import ValidationError
+
 
 class Category(models.Model):
     """ Category model definition """
@@ -26,7 +27,6 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     # product quantity field
     quantity = models.PositiveIntegerField(null=True)
-
     serial_number = models.CharField(max_length=100, unique=True, default=uuid.uuid4)
     # time stamp for when the product was created
     created_at = models.DateTimeField(auto_now_add=True)
@@ -34,7 +34,7 @@ class Product(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        # string representation of the product model
+    # string representation of the product model
         return self.name
 
 
@@ -71,8 +71,7 @@ class Order(models.Model):
     # price of the product ordered
     price = models.DecimalField(max_digits=10, decimal_places=2)
     # status of the order
-    status = models.CharField(max_length=10,
-                              choices=STATUS_CHOICES, default='Pending')
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Pending')
 
     # time stamp when the order was created
     created_at = models.DateTimeField(auto_now_add=True)
@@ -85,11 +84,24 @@ class Order(models.Model):
         return self.price * self.quantity
 
     def save(self, *args, **kwargs):
-        if self.pk is not None:  # if order exists
+        """ the save method for the Order model. """
+
+        # Check if the quantity ordered is more than the quantity available in the product
+        if self.quantity > self.product.quantity:
+            raise ValidationError("The quantity ordered cannot be more than the quantity available in the product.")
+
+        # Check if the price matches the actual product price
+        if self.price != self.product.price:
+            raise ValidationError("The price does not match the actual product price.")
+
+        # if order exists
+        if self.pk is not None:
             orig = Order.objects.get(pk=self.pk)
-            if orig.status != 'Delivered' and self.status == 'Delivered':  # if status changed to 'delivered'
-                Sale.objects.create(product=self.product, buyer=self.created_by, quantity=self.quantity, price=self.price)  # create a sale
-                # Decrease the product quantity
+            if orig.status != 'delivered' and self.status == 'delivered':
+                Sale.objects.create(product=self.product,
+                                     buyer=self.created_by,
+                                     quantity=self.quantity, price=self.price)
+                # Update product quantity
                 self.product.quantity -= self.quantity
                 self.product.save()
         super().save(*args, **kwargs)

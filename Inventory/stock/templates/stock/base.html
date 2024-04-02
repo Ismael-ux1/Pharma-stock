@@ -176,6 +176,7 @@ integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG
   </nav>
   {% endif %}
   {% block content %}
+  <!-- Display messages -->
   {% if messages %}
   <div class="container mt-3">
     {% for message in messages %}
@@ -184,6 +185,7 @@ integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG
     </div>
     {% endfor %}
   </div>
+  {% endif %}
   {% endblock %}
   <div class="bg-light">
     <footer class="py-3 my-4">
