@@ -11,6 +11,7 @@ from django.shortcuts import render
 from django.contrib import messages
 import pandas as pd
 import json
+from django.db.models import F, Sum
 
 
 @login_required  # Decorator to ensure the user is authenticated
@@ -104,11 +105,24 @@ def orders(request):
 
 
 @login_required
-def sales_view(request):
+def sales_report(request):
     sales = Sale.objects.all()  # Get all sales
-    context = {'sales': sales, }
-    return render(request, 'stock/sales_report.html', context)
+    # Calculate total sales
+    total_sales = sales.aggregate(total=Sum(F('price') * F('quantity')))['total']
 
+    # Calculate sales per product
+    sales_per_product = sales.values('product__name').annotate(total=Sum(F('price') * F('quantity')))
+
+    # Calculate sales per buyer
+    sales_per_buyer = sales.values('buyer__username').annotate(total=Sum(F('price') * F('quantity')))
+
+    context = {
+        'total_sales': total_sales,
+        'sales_per_product': sales_per_product,
+        'sales_per_buyer': sales_per_buyer,
+    }
+
+    return render(request, 'stock/sales_report.html', context)
 
 @login_required
 def users(request):

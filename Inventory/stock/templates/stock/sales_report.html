@@ -1,0 +1,53 @@
+{% extends "stock/base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">Sales Report</h1>
+
+    <h2>Total Sales: {{ total_sales }}</h2>
+
+    <h2>Sales per Product</h2>
+    <ul class="list-group mb-4">
+    {% for sale in sales_per_product %}
+        <li class="list-group-item">{{ sale.product__name }}: {{ sale.total }}</li>
+    {% endfor %}
+    </ul>
+
+    <h2>Sales per Buyer</h2>
+    <ul class="list-group mb-4">
+    {% for sale in sales_per_buyer %}
+        <li class="list-group-item">{{ sale.buyer__username }}: {{ sale.total }}</li>
+    {% endfor %}
+    </ul>
+
+    <canvas id="salesChart"></canvas>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+	var ctx = document.getElementById('salesChart').getContext('2d');
+    var chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: JSON.parse('{{ product_names|escapejs }}'),
+            datasets: [{
+                label: 'Sales per Product',
+                data: JSON.parse('{{ product_sales|escapejs }}'),
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+</script>
+{% endblock %}
