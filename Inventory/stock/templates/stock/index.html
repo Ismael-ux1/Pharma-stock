@@ -107,8 +107,8 @@
                                     {% for order in orders %}
                                     <tr>
                                         <td class="serial">{{ forloop.counter }}</td>
-                                        <td>{{ order.product.name }}</td>
-                                        <td>{{ order.buyer.username }}</td>
+                                        <td>{{ order.product }}</td>
+                                        <td>{{ order.created_by }}</td>
                                         <td>{{ order.quantity }}</td>
                                         <td>{{ order.price }}</td>
                                         <td>

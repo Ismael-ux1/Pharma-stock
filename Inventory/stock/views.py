@@ -28,17 +28,26 @@ def index(request):
     product_count = len(products)
     sale_count = sales.count()
 
+    # check if the HTTP request method is POST
     if request.method == 'POST':
+        # Initialize the OrderForm with data from the POST request
         form = OrderForm(request.POST)
+        # validate the form data
         if form.is_valid():
+            # save the form data to a new Order object,
+            # but don't commit to the database yet
             obj = form.save(commit=False)
+            # Set the customer of the Order to the current user
             obj.customer = request.user
+            # Save the Order object to the database
             obj.save()
+            # # Redirect the user to the dashboard index page
             return redirect('dashboard-index')
     else:
+        # Initialize an empty OrderForm
         form = OrderForm()
 
-    context = {
+    context = { # Define the context data for the template
         'tittle': "Home",
         'users': users,
         'form': form,
@@ -50,6 +59,7 @@ def index(request):
         'sale_count': sale_count,
         "count_users": reg_users,
     }
+    # Render the 'stock/index.html' template with the context data
     return render(request, 'stock/index.html', context)
 
 
