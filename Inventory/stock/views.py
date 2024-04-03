@@ -47,7 +47,7 @@ def index(request):
         # Initialize an empty OrderForm
         form = OrderForm()
 
-    context = { # Define the context data for the template
+    context = {  # Define the context data for the template
         'tittle': "Home",
         'users': users,
         'form': form,
@@ -97,7 +97,8 @@ def orders(request):
         form = OrderForm(request.POST)
         if form.is_valid():
             instance = form.save(commit=False)
-            # Check if the quantity ordered is more than the quantity available in the product
+            # Check if the quantity ordered is more than,
+            # the quantity available in the product
             if instance.quantity > instance.product.quantity:
                 messages.error(request, 'The quantity ordered cannot be more than the quantity available in the product.')
             # Check if the price matches the actual product price
