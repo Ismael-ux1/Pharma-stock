@@ -3,7 +3,8 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.db.models import Sum
 import uuid
-from django.core.exceptions import ValidationError 
+from django.core.exceptions import ValidationError
+
 
 class Category(models.Model):
     """ Category model definition """
