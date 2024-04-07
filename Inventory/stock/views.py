@@ -117,7 +117,8 @@ def orders(request):
 
 @login_required
 def sales_report(request):
-    sales = Sale.objects.all()  # Get all sales
+    # Get all sales
+    sales = Sale.objects.all()
     # Calculate total sales
     total_sales = sales.aggregate(total=Sum(F('price') * F('quantity')))['total']
 
