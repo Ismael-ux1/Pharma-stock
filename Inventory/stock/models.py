@@ -88,7 +88,8 @@ class Order(models.Model):
     def save(self, *args, **kwargs):
         if self.pk is not None:  # if order exists
             orig = Order.objects.get(pk=self.pk)
-            if orig.status != 'Delivered' and self.status == 'Delivered':  # if status changed to 'delivered'
+            # if status changed to 'delivered'
+            if orig.status != 'Delivered' and self.status == 'Delivered':
                 Sale.objects.create(product=self.product, buyer=self.created_by, quantity=self.quantity, price=self.price)  # create a sale
                 # Decrease the product quantity
                 self.product.quantity -= self.quantity
