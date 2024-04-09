@@ -90,7 +90,9 @@ class Order(models.Model):
             orig = Order.objects.get(pk=self.pk)
             # if status changed to 'delivered'
             if orig.status != 'Delivered' and self.status == 'Delivered':
-                Sale.objects.create(product=self.product, buyer=self.created_by, quantity=self.quantity, price=self.price)  # create a sale
+                # create a sale
+                Sale.objects.create(product=self.product, buyer=self.created_by,
+                                    quantity=self.quantity, price=self.price)
                 # Decrease the product quantity
                 self.product.quantity -= self.quantity
                 self.product.save()
