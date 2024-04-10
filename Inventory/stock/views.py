@@ -23,7 +23,6 @@ def index(request):
     products = Product.objects.all()
     reg_users = len(User.objects.all())
     sales = Sale.objects.all()
-
     order_count = orders.count()
     product_count = len(products)
     sale_count = sales.count()
