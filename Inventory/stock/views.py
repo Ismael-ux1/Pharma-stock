@@ -99,7 +99,8 @@ def orders(request):
             # Check if the quantity ordered is more than,
             # the quantity available in the product
             if instance.quantity > instance.product.quantity:
-                messages.error(request, 'The quantity ordered cannot be more than the quantity available in the product.')
+                messages.error(request, 'The quantity ordered cannot be more than
+                                         the quantity available in the product.')
             # Check if the price matches the actual product price
             elif instance.price != instance.product.price:
                 messages.error(request, 'The price does not match the actual product price.')
