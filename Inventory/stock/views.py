@@ -133,8 +133,8 @@ def sales_report(request):
         'sales_per_product': sales_per_product,
         'sales_per_buyer': sales_per_buyer,
     }
-
     return render(request, 'stock/sales_report.html', context)
+
 
 @login_required
 def users(request):
