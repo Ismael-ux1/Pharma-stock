@@ -120,13 +120,10 @@ def sales_report(request):
     sales = Sale.objects.all()
     # Calculate total sales
     total_sales = sales.aggregate(total=Sum(F('price') * F('quantity')))['total']
-
     # Calculate sales per product
     sales_per_product = sales.values('product__name').annotate(total=Sum(F('price') * F('quantity')))
-
     # Calculate sales per buyer
     sales_per_buyer = sales.values('buyer__username').annotate(total=Sum(F('price') * F('quantity')))
-
     context = {
         'total_sales': total_sales,
         'sales_per_product': sales_per_product,
