@@ -82,7 +82,6 @@ def products(request):
     # create a new form instance
     else:
         form = ProductForm()
-
     # Context data to be passed to the template
     context = {"title": "Products", "products": products, "form": form}
     # Render the template with the context data
